@@ -1,5 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel; //Import this namespace to be able to make use of the DefaultValue attribute.
+using System.ComponentModel.DataAnnotations; //Import this namespace to be able to make use of the Key and Required attribute.
+using System.ComponentModel.DataAnnotations.Schema; //Import this namespace to be able to make use of the ForeignKey attribute.
 
+/* The model classes, representing real-life entities, shape up the database.
+ * They comprise of definition of attributes (what makes up a specific entity - states).
+ * In the professional playfield, the developer never interacts with the database directly.
+ * This is instead done by means of an ORM (Object Relational Mapping - in this case of ASP.NET Core, there exists Entity Framework Core, as well as Entity Framework for legacy .NET Framework projects).
+ * The attributes (columns or fields as otherwise known in database terms) are defined in C# and would be tantamount to column definitions within CREATE TABLE in SQL.
+ * These classes will be mapped to a table counterpart in Microsoft SQL Server.
+ * Therefore, when the migration is run, SQL statements will be prepared as follows: 
+ * 1. For the first migration, create the database and create a table based on the model class.
+ * 2. For other migrations, alter/drop/create attributes as necessary (one may choose to add or alter constraints later on).
+ * 3. There is also the option to seed data into the database within the migrations or the context class. */
 namespace Domain.Models
 {
     /// <summary>
@@ -14,26 +26,30 @@ namespace Domain.Models
         /// By attaching the [DatabaseGenerated(DatabaseGeneratedOption.Identity)] annotation above the property definition, 
         /// Entity Framework Core will generate a number, starting from 1 and increments by 1 for each new row.
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key] //Mark the attribute as a primary key, through which by default the attribute adopts the NOT NULL and UNIQUE constraints.
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)] //Automatically generates an integer starting from 1, then adds the value by 1 for each new row.
         public int Id { get; set; }
 
         /// <summary>
         /// This is not to be confused with the Id attribute. 
-        /// The former denotes how instances will be uniquely identified in the SQL Server database.
+        /// The former denotes how instances will be uniquely identified in the Microsoft SQL Server database.
         /// Whereas ExternalId stores the value associated with the "id" key in the JSON file 
         /// (therefore, the identifier associated with each JSON object).
         /// </summary>
+        [Required] //This is a data validator annotation, which apart from adding a NOT NULL constraint for the ExternalId, it also does not allow empty values or whitespaces.
         public string ExternalId { get; set; }
 
         /// <summary>
         /// A rather self-explanatory attribute storing the name of the eatery.
         /// </summary>
+        [Required] //This is a data validator annotation, which apart from adding a NOT NULL constraint for the ExternalId, it also does not allow empty values or whitespaces.
         public string Name { get; set; }
 
         /// <summary>
         /// A brief description of the eatery; mainly used to indicate what cuisine the eatery specialises in, 
         /// as well as to highlight unique selling points (what sets a restaurant apart from others).
         /// </summary>
+        [Required] //This is a data validator annotation, which apart from adding a NOT NULL constraint for the ExternalId, it also does not allow empty values or whitespaces.
         public string Description { get; set; }
 
         /// <summary>
@@ -42,22 +58,27 @@ namespace Domain.Models
         /// will be used to approve a menu item associated with the owner's restaurant, 
         /// if and only if the email address of the authenticated user is equal to the email address bound to the former instance.
         /// </summary>
+        [Required] //This is a data validator annotation, which apart from adding a NOT NULL constraint for the ExternalId, it also does not allow empty values or whitespaces.
         public string OwnerEmailAddress { get; set; }
 
         /// <summary>
         /// Stores the location in which the eatery is based, comprising of a door number/name followed by the street address and the locality.
         /// </summary>
+        [Required] //This is a data validator annotation, which apart from adding a NOT NULL constraint for the ExternalId, it also does not allow empty values or whitespaces.
         public string Address { get; set; }
 
         /// <summary>
         /// Stores the phone number which serves as a point of contact in the events of queries and bookings.
         /// </summary>
+        [Required] //This is a data validator annotation, which apart from adding a NOT NULL constraint for the ExternalId, it also does not allow empty values or whitespaces.
         public string Phone { get; set; }
 
         /// <summary>
         /// Denotes whether the restaurant has been approved by the website administrator.
         /// If approved, it can be displayed on the public catalogue.
         /// </summary>
+        [DefaultValue(false)] //By default, when a new instance of Restaurant is created, approval status is set to false to simulate pending approval from the end of the website administrator.
+        [Required] //This is a data validator annotation, which apart from adding a NOT NULL constraint for the ExternalId, it also does not allow empty values or whitespaces.
         public bool IsApproved { get; set; }
         #endregion
     }

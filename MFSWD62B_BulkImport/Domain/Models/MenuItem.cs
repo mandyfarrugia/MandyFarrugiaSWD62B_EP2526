@@ -1,4 +1,18 @@
-﻿namespace Domain.Models
+﻿using System.ComponentModel; //Import this namespace to be able to make use of the DefaultValue attribute.
+using System.ComponentModel.DataAnnotations; //Import this namespace to be able to make use of the Key and Required attribute.
+using System.ComponentModel.DataAnnotations.Schema; //Import this namespace to be able to make use of the ForeignKey attribute.
+
+/* The model classes, representing real-life entities, shape up the database.
+ * They comprise of definition of attributes (what makes up a specific entity - states).
+ * In the professional playfield, the developer never interacts with the database directly.
+ * This is instead done by means of an ORM (Object Relational Mapping - in this case of ASP.NET Core, there exists Entity Framework Core, as well as Entity Framework for legacy .NET Framework projects).
+ * The attributes (columns or fields as otherwise known in database terms) are defined in C# and would be tantamount to column definitions within CREATE TABLE in SQL.
+ * These classes will be mapped to a table counterpart in Microsoft SQL Server.
+ * Therefore, when the migration is run, SQL statements will be prepared as follows: 
+ * 1. For the first migration, create the database and create a table based on the model class.
+ * 2. For other migrations, alter/drop/create attributes as necessary (one may choose to add or alter constraints later on).
+ * 3. There is also the option to seed data into the database within the migrations or the context class. */
+namespace Domain.Models
 {
     /// <summary>
     /// A model class representing a menu item which can be related to one specific restaurant by means of the RestaurantId attribute.
@@ -13,24 +27,28 @@
         /// This will be generated in the DbContext class using a DEFAULT constraint whereby when no value is supplied to this attribute,
         /// a default value, in this case a Version 4 Universally Unique Identifier (otherwise simply known as UUID), is automatically used.
         /// </summary>
+        [Key]
         public Guid Id { get; set; }
 
         /// <summary>
         /// This is not to be confused with the Id attribute. 
-        /// The former denotes how instances will be uniquely identified in the SQL Server database.
+        /// The former denotes how instances will be uniquely identified in the Microsoft SQL Server database.
         /// Whereas ExternalId stores the value associated with the "id" key in the JSON file 
         /// (therefore, the identifier associated with each JSON object).
         /// </summary>
+        [Required] //This is a data validator annotation, which apart from adding a NOT NULL constraint for the ExternalId, it also does not allow empty values or whitespaces.
         public string ExternalId { get; set; }
 
         /// <summary>
         /// The title refers to the name of a victual or beverage served by a specific eatery.
         /// </summary>
+        [Required] //This is a data validator annotation, which apart from adding a NOT NULL constraint for the ExternalId, it also does not allow empty values or whitespaces.
         public string Title { get; set; }
 
         /// <summary>
         /// The quantity of payment required in exchange for a specific item in the menu.
         /// </summary>
+        [Required] //This is a data validator annotation, which apart from adding a NOT NULL constraint for the ExternalId, it also does not allow empty values or whitespaces.
         public double Price { get; set; }
 
         /// <summary>
@@ -39,19 +57,30 @@
         /// It is safe to assume that the web application may be used from a country using a different currency,
         /// therefore it is always wise to take currency-agnosticism into consideration.
         /// </summary>
+        [Required] //This is a data validator annotation, which apart from adding a NOT NULL constraint for the ExternalId, it also does not allow empty values or whitespaces.
         public string Currency { get; set; }
+
+        /// <summary>
+        /// Upon implementing lazy loading, this navigational property allows access to the properties related to the foreign instance (Restaurant) 
+        /// once the MenuItem instance has a valid foreign key value (the menu item is related to a restaurant).
+        /// </summary>
+        [ForeignKey(nameof(RestaurantId))]
+        public virtual Restaurant Restaurant { get; set; }
 
         /// <summary>
         /// This attribute acts as a foreign key as it stores a value representing an identifier from the Restaurant table (which is a foreign table related to MenuItem). 
         /// Intrinsically, it will be used to establish a one-to-many relationship between Restaurant and MenuItem 
         /// whereby one restaurant can serve many menu items, but that menu item can only be served in a single eatery.
         /// </summary>
+        [Required] //This is a data validator annotation, which apart from adding a NOT NULL constraint for the ExternalId, it also does not allow empty values or whitespaces.
         public int RestaurantId { get; set; }
 
         /// <summary>
         /// Denotes whether the menu item has been approved by the owner of the restaurant.
         /// If approved, it can be displayed in the public catalogue.
         /// </summary>
+        [DefaultValue(false)] //By default, when a new instance of MenuItem is created, approval status is set to false to simulate pending approval from the end of the restaurant owner.
+        [Required] //This is a data validator annotation, which apart from adding a NOT NULL constraint for the ExternalId, it also does not allow empty values or whitespaces.
         public bool IsApproved { get; set; }
         #endregion
     }
